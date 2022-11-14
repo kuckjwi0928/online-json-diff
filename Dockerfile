@@ -9,7 +9,7 @@ RUN go build -o onlien-json-diff cmd/main.go
 FROM node:16.18-alpine AS client
 WORKDIR /app
 COPY web/package.json .
-COPY web/package-lock.json .
+COPY web/yarn.lock .
 RUN yarn install
 COPY web .
 RUN yarn run build

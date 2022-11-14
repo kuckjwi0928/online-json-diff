@@ -5,9 +5,9 @@ function DiffForm(props) {
   const {afterClick} = props
 
   const latestDiff = storage.get('latest-diff') ?? {}
-  const [headers, setHeaders] = useState({...latestDiff.headers});
-  const [originURL, setOriginURL] = useState('')
-  const [compareURL, setCompareURL] = useState('')
+  const [headers, setHeaders] = useState({...latestDiff.headers})
+  const [originURL, setOriginURL] = useState(latestDiff.originURL)
+  const [compareURL, setCompareURL] = useState(latestDiff.compareURL)
   const [originError, setOriginError] = useState('');
   const [compareError, setCompareError] = useState('');
   const [headerKey, setHeaderKey] = useState('');
