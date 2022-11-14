@@ -41,8 +41,10 @@ func baseHandler[REQ api.Request, RES any](ctx *gin.Context, req REQ, handlerFun
 
 func (a *App) diffTargetHandler(ctx *gin.Context, req *api.DiffTargetRequest) (*api.DiffTargetResponse, error) {
 	headers := make(map[string]string)
-	for _, headerKey := range strings.Split(req.HeaderKeys, ",") {
-		headers[headerKey] = ctx.GetHeader(headerKey)
+	if req.HeaderKeys != "" {
+		for _, headerKey := range strings.Split(req.HeaderKeys, ",") {
+			headers[headerKey] = ctx.GetHeader(headerKey)
+		}
 	}
 	res, err := a.serviceContainer.HttpService().MultiGet([]string{req.OriginURL, req.CompareURL}, headers)
 	if err != nil {
