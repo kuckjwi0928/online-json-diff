@@ -10,9 +10,6 @@ func TestHttpClientOptions(t *testing.T) {
 		WithHeaders(map[string]string{
 			"Content-Type": "application/json",
 		}),
-		WithBody(map[string]string{
-			"key": "value",
-		}),
 	)
 	assert.Nil(t, err)
 }
