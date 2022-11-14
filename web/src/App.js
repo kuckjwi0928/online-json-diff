@@ -4,9 +4,7 @@ import DiffPage from "./pages/DiffPage";
 
 function App() {
   return (
-    <>
-      <DiffPage />
-    </>
+    <DiffPage />
   )
 }
 

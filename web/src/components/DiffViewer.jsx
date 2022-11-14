@@ -4,12 +4,14 @@ import ReactDiffViewer from 'react-diff-viewer'
 function DiffViewer(props) {
   const { left, right } = props
   return (
-    <ReactDiffViewer
-      oldValue={left}
-      newValue={right}
-      splitView
-      useDarkTheme
-    />
+    <div style={{marginBottom: '65px'}}>
+      <ReactDiffViewer
+        oldValue={left}
+        newValue={right}
+        splitView
+        useDarkTheme
+      />
+    </div>
   )
 }
 
