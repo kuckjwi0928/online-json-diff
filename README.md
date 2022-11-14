@@ -18,3 +18,6 @@ make client-debug
 ```shell
 docker run -p 8080:8080 -d --name online-json-diff kuckjwi/online-json-diff
 ```
+
+# Demo
+![example](./demo/example.png "Example Image")
