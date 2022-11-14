@@ -23,19 +23,11 @@ type HttpChannelResult struct {
 
 func (h *HttpServiceImpl) MultiRequest(urls []string, method string, body []byte, headers map[string]string) map[string]HttpChannelResult {
 	ch := make(chan HttpChannelResult, len(urls))
-	client, err := NewHttpClient(
+	client, _ := NewHttpClient(
 		WithHeaders(headers),
 	)
 	for _, url := range urls {
 		go func(ch chan<- HttpChannelResult, url string) {
-			if err != nil {
-				ch <- HttpChannelResult{
-					url: url,
-					Err: err,
-				}
-				return
-			}
-
 			var (
 				res []byte
 				err error
