@@ -48,17 +48,15 @@ func (a *App) handleDiffTarget(ctx *gin.Context, req *api.DiffTargetRequest) (*a
 			headers[headerKey] = ctx.GetHeader(headerKey)
 		}
 	}
-	res, err := a.serviceContainer.HttpService().MultiGet([]string{req.OriginURL, req.CompareURL}, headers)
-	if err != nil {
-		return nil, err
-	}
-	bytes := res.([][]byte)
-	if err != nil {
-		return nil, err
+	mrs := a.serviceContainer.HttpService().MultiRequest([]string{req.OriginURL, req.CompareURL}, req.Method, []byte(req.BodyJSON), headers)
+	for _, v := range mrs {
+		if v.Err != nil {
+			return nil, v.Err
+		}
 	}
 	return &api.DiffTargetResponse{
-		Left:  string(pretty.Pretty(bytes[0])),
-		Right: string(pretty.Pretty(bytes[1])),
+		Left:  string(pretty.Pretty(mrs[req.OriginURL].Response)),
+		Right: string(pretty.Pretty(mrs[req.CompareURL].Response)),
 	}, nil
 }
 
@@ -69,20 +67,18 @@ func (a *App) handleDiff(ctx *gin.Context, req *api.DiffTargetRequest) (*api.Dif
 			headers[headerKey] = ctx.GetHeader(headerKey)
 		}
 	}
-	res, err := a.serviceContainer.HttpService().MultiGet([]string{req.OriginURL, req.CompareURL}, headers)
-	if err != nil {
-		return nil, err
+	mrs := a.serviceContainer.HttpService().MultiRequest([]string{req.OriginURL, req.CompareURL}, req.Method, []byte(req.BodyJSON), headers)
+	for _, v := range mrs {
+		if v.Err != nil {
+			return nil, v.Err
+		}
 	}
-	bytes := res.([][]byte)
-	if err != nil {
-		return nil, err
-	}
-	diff, err := a.serviceContainer.DiffService().Diff(bytes[0], bytes[1])
+	diff, err := a.serviceContainer.DiffService().Diff(mrs[req.OriginURL].Response, mrs[req.CompareURL].Response)
 	if err != nil {
 		return nil, err
 	}
 	return &api.DiffTargetResponse{
-		Left:  string(pretty.Pretty(bytes[0])),
+		Left:  string(pretty.Pretty(mrs[req.OriginURL].Response)),
 		Right: diff,
 	}, nil
 }

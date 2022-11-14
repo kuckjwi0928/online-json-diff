@@ -9,14 +9,17 @@ function DiffPage() {
   const [left, setLeft] = useState('');
   const [right, setRight] = useState('');
 
-  const diff = async ({originURL, compareURL, headers}) => {
-    const {data} = await getV1DiffTarget(originURL, compareURL, headers)
+  const diff = async ({originURL, compareURL, method, bodies, headers}) => {
+    const {data} = await getV1DiffTarget(originURL, compareURL, method, bodies, headers)
+
     setLeft(data.left)
     setRight(data.right)
 
     storage.set('latest-diff', {
       originURL,
       compareURL,
+      method,
+      bodies,
       headers
     })
   }

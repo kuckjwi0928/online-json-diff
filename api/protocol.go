@@ -8,6 +8,8 @@ type DiffTargetRequest struct {
 	OriginURL  string `form:"originURL" binding:"required"`
 	CompareURL string `form:"compareURL" binding:"required"`
 	HeaderKeys string `form:"headerKeys"`
+	Method     string `form:"method" binding:"required"`
+	BodyJSON   string `form:"bodyJSON" binding:"required"`
 }
 
 func (d *DiffTargetRequest) Validate() error {

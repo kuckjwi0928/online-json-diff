@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import storage from "../lib/LocalObjectStorage";
+import ViewBadge from "./ViewBadge";
+import Header from "./Header";
+import Body from "./Body";
+import Method from "./Method";
 
 function DiffForm(props) {
   const {afterClick} = props
 
   const latestDiff = storage.get('latest-diff') ?? {}
+  const [method, setMethod] = useState(latestDiff.method ?? 'GET');
   const [headers, setHeaders] = useState({...latestDiff.headers})
+  const [bodies, setBodies] = useState({...latestDiff.bodies})
   const [originURL, setOriginURL] = useState(latestDiff.originURL)
   const [compareURL, setCompareURL] = useState(latestDiff.compareURL)
   const [originError, setOriginError] = useState('');
   const [compareError, setCompareError] = useState('');
-  const [headerKey, setHeaderKey] = useState('');
-  const [headerValue, setHeaderValue] = useState('');
 
   const onClick = () => {
     if (!originURL) {
@@ -30,6 +34,8 @@ function DiffForm(props) {
     afterClick({
       originURL,
       compareURL,
+      method,
+      bodies,
       headers
     })
   }
@@ -44,16 +50,11 @@ function DiffForm(props) {
     }
   }
 
-  const addHeader = () => {
-    if (!headerKey || !headerValue) {
-      return
-    }
+  const addHeader = (key, value) => {
     setHeaders({
       ...headers,
-      [headerKey]: headerValue,
+      [key]: value,
     })
-    setHeaderKey('')
-    setHeaderValue('')
   }
 
   const deleteHeader = (key) => {
@@ -63,24 +64,32 @@ function DiffForm(props) {
     })
   }
 
+  const addBody = (key, value) => {
+    setBodies({
+      ...bodies,
+      [key]: value
+    })
+  }
+
+  const deleteBody = (key) => {
+    delete bodies[key]
+    setBodies({
+      ...bodies,
+    })
+  }
+
   return (
     <div className="w-full p-5">
-      <div className="flex h-auto">
-        <input type="text" name="key" onChange={(e) => setHeaderKey(e.target.value)} value={headerKey}
-               placeholder="Header key" className="input input-bordered"/>
-        <input type="text" name="value" onChange={(e) => setHeaderValue(e.target.value)} value={headerValue}
-               placeholder="Header value" className="input input-bordered ml-2.5"/>
-        <button className="btn btn-accent ml-2.5" onClick={addHeader}>Add</button>
-      </div>
-      <div className="mt-5">
-        {
-          Object.keys(headers).map((key, index) =>
-            <button className={`badge badge-outline ${index !== 0 ? 'ml-1.5' : ''}`} key={key} onClick={() => deleteHeader(key)}>
-              {`${key}=${headers[key]}`}
-            </button>
-          )
-        }
-      </div>
+      <Method method={method} setMethod={setMethod} />
+      <Header addHeader={addHeader} />
+      <ViewBadge items={headers} deleteItem={deleteHeader} />
+      {
+        method === 'POST' &&
+          <>
+            <Body addBody={addBody} />
+            <ViewBadge items={bodies} deleteItem={deleteBody} />
+          </>
+      }
       <div className="divider" />
       <div className="grid grid-cols-3 h-auto justify-items-center">
         <input type="text" name="originURL" onChange={onInputChange} placeholder="https://"

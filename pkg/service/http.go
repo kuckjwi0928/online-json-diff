@@ -1,9 +1,11 @@
 package service
 
-import "github.com/samber/lo"
+import (
+	"errors"
+)
 
 type HttpService interface {
-	MultiGet(urls []string, headers map[string]string) (interface{}, error)
+	MultiRequest(urls []string, method string, body []byte, headers map[string]string) map[string]HttpChannelResult
 }
 
 func NewHttpService() HttpService {
@@ -13,56 +15,68 @@ func NewHttpService() HttpService {
 type HttpServiceImpl struct {
 }
 
-type httpChannelResult struct {
-	response []byte
-	err      error
+type HttpChannelResult struct {
+	url      string
+	Response []byte
+	Err      error
 }
 
-func (h *HttpServiceImpl) MultiGet(urls []string, headers map[string]string) (interface{}, error) {
-	ch := make(chan httpChannelResult, len(urls))
+func (h *HttpServiceImpl) MultiRequest(urls []string, method string, body []byte, headers map[string]string) map[string]HttpChannelResult {
+	ch := make(chan HttpChannelResult, len(urls))
 	client, err := NewHttpClient(
 		WithHeaders(headers),
 	)
 	for _, url := range urls {
-		go func(ch chan<- httpChannelResult, url string) {
+		go func(ch chan<- HttpChannelResult, url string) {
 			if err != nil {
-				ch <- httpChannelResult{
-					err: err,
+				ch <- HttpChannelResult{
+					url: url,
+					Err: err,
 				}
 				return
 			}
 
-			res, err := client.Get(url)
+			var (
+				res []byte
+				err error
+			)
 
-			if err != nil {
-				ch <- httpChannelResult{
-					err: err,
+			if method == "GET" {
+				res, err = client.Get(url)
+			} else if method == "POST" {
+				res, err = client.Post(url, body)
+			} else {
+				ch <- HttpChannelResult{
+					url: url,
+					Err: errors.New("unsupported method"),
 				}
 				return
 			}
 
-			ch <- httpChannelResult{
-				response: res,
-				err:      nil,
+			if err != nil {
+				ch <- HttpChannelResult{
+					url: url,
+					Err: err,
+				}
+				return
+			}
+
+			ch <- HttpChannelResult{
+				url:      url,
+				Response: res,
+				Err:      nil,
 			}
 		}(ch, url)
 	}
 
-	results := make([]httpChannelResult, len(urls))
+	results := make(map[string]HttpChannelResult)
 
 	for i := 0; i < len(urls); i++ {
-		results[i] = <-ch
+		channelResult := <-ch
+		results[channelResult.url] = channelResult
 	}
 
 	close(ch)
 
-	for _, result := range results {
-		if result.err != nil {
-			return nil, result.err
-		}
-	}
-
-	return lo.Map(results, func(result httpChannelResult, _ int) []byte {
-		return result.response
-	}), nil
+	return results
 }
