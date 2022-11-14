@@ -6,8 +6,8 @@ function DiffForm(props) {
 
   const latestDiff = storage.get('latest-diff') ?? {}
   const [headers, setHeaders] = useState({...latestDiff.headers});
-  const [originURL, setOriginURL] = useState('https://636f1c4ebb9cf402c80fface.mockapi.io/kuckjwi')
-  const [compareURL, setCompareURL] = useState('https://636f1c4ebb9cf402c80fface.mockapi.io/kuckjwi2')
+  const [originURL, setOriginURL] = useState('')
+  const [compareURL, setCompareURL] = useState('')
   const [originError, setOriginError] = useState('');
   const [compareError, setCompareError] = useState('');
   const [headerKey, setHeaderKey] = useState('');
