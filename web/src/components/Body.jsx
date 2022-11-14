@@ -1,28 +1,18 @@
 import React, { useState } from "react";
 
 function Body(props) {
-  const { addBody } = props
-  const [bodyKey, setBodyKey] = useState('');
-  const [bodyValue, setBodyValue] = useState('');
+  const { body, setBody } = props
+  const [value, setValue] = useState(body)
 
   const onClick = () => {
-    if (!bodyKey || !bodyValue) {
-      return
-    }
-
-    addBody(bodyKey, bodyValue)
-
-    setBodyKey('')
-    setBodyValue('')
+    setBody(value)
   }
 
   return (
     <div className="flex h-auto mt-5">
-      <input type="text" name="key" onChange={(e) => setBodyKey(e.target.value)} value={bodyKey}
-             placeholder="Body key" className="input input-bordered"/>
-      <input type="text" name="value" onChange={(e) => setBodyValue(e.target.value)} value={bodyValue}
-             placeholder="Body value" className="input input-bordered ml-2.5"/>
-      <button className="btn btn-accent ml-2.5" onClick={onClick}>Add</button>
+      <input type="text" onChange={(e) => setValue(e.target.value)} value={value}
+             placeholder="Request Body" className="grow input input-bordered"/>
+      <button className="flex-none btn btn-accent ml-2.5" onClick={onClick}>Apply</button>
     </div>
   )
 }

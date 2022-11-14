@@ -4,6 +4,7 @@ import ViewBadge from "./ViewBadge";
 import Header from "./Header";
 import Body from "./Body";
 import Method from "./Method";
+import ViewBody from "./ViewBody";
 
 function DiffForm(props) {
   const {afterClick} = props
@@ -11,7 +12,7 @@ function DiffForm(props) {
   const latestDiff = storage.get('latest-diff') ?? {}
   const [method, setMethod] = useState(latestDiff.method ?? 'GET');
   const [headers, setHeaders] = useState({...latestDiff.headers})
-  const [bodies, setBodies] = useState({...latestDiff.bodies})
+  const [body, setBody] = useState(latestDiff.body)
   const [originURL, setOriginURL] = useState(latestDiff.originURL)
   const [compareURL, setCompareURL] = useState(latestDiff.compareURL)
   const [originError, setOriginError] = useState('');
@@ -35,7 +36,7 @@ function DiffForm(props) {
       originURL,
       compareURL,
       method,
-      bodies,
+      body,
       headers
     })
   }
@@ -64,20 +65,6 @@ function DiffForm(props) {
     })
   }
 
-  const addBody = (key, value) => {
-    setBodies({
-      ...bodies,
-      [key]: value
-    })
-  }
-
-  const deleteBody = (key) => {
-    delete bodies[key]
-    setBodies({
-      ...bodies,
-    })
-  }
-
   return (
     <div className="w-full p-5">
       <Method method={method} setMethod={setMethod} />
@@ -86,8 +73,8 @@ function DiffForm(props) {
       {
         method === 'POST' &&
           <>
-            <Body addBody={addBody} />
-            <ViewBadge items={bodies} deleteItem={deleteBody} />
+            <Body body={body} setBody={setBody} />
+            <ViewBody body={body} />
           </>
       }
       <div className="divider" />
