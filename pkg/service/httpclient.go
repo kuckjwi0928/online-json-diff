@@ -51,8 +51,6 @@ func (c *HttpClient) bindHeaders(req *http.Request) {
 }
 
 func (c *HttpClient) Get(url string) ([]byte, error) {
-	log.Println(url)
-
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -64,6 +62,9 @@ func (c *HttpClient) Get(url string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Println(url)
+	log.Printf("headers {%s}", resp.Request.Header)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
