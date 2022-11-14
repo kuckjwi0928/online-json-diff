@@ -99,7 +99,7 @@ function DiffForm(props) {
   }
 
   const toQueryString = (queryStringObject) => {
-    if (Object.keys(queryStringObject) <= 0) {
+    if (Object.keys(queryStringObject).length <= 0) {
       return ''
     }
     return '?' + Object.entries(queryStringObject).map(([key, value]) => `${key}=${value}`).join('&')
