@@ -1,15 +1,13 @@
 package service
 
 import (
-	"errors"
 	"io"
+	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
 type HttpClient struct {
-	url     string
 	headers map[string]string
 	body    map[string]string
 	worker  *http.Client
@@ -30,12 +28,6 @@ func NewHttpClient(options ...func(client *HttpClient)) (*HttpClient, error) {
 	return client, client.validate()
 }
 
-func WithURL(url string) func(client *HttpClient) {
-	return func(client *HttpClient) {
-		client.url = url
-	}
-}
-
 func WithHeaders(headers map[string]string) func(client *HttpClient) {
 	return func(client *HttpClient) {
 		client.headers = headers
@@ -49,21 +41,7 @@ func WithBody(body map[string]string) func(client *HttpClient) {
 }
 
 func (c *HttpClient) validate() error {
-	if c.url == "" {
-		return errors.New("url is required")
-	}
-	if !strings.HasPrefix(c.url, "http") {
-		return errors.New("url must be start with http")
-	}
 	return nil
-}
-
-func (c *HttpClient) toQueryString() string {
-	queries := make([]string, len(c.body))
-	for key, value := range c.body {
-		queries = append(queries, key+"="+value)
-	}
-	return "?" + strings.Join(queries, "&")
 }
 
 func (c *HttpClient) bindHeaders(req *http.Request) {
@@ -72,8 +50,10 @@ func (c *HttpClient) bindHeaders(req *http.Request) {
 	}
 }
 
-func (c *HttpClient) Get() ([]byte, error) {
-	req, err := http.NewRequest("GET", c.url+c.toQueryString(), nil)
+func (c *HttpClient) Get(url string) ([]byte, error) {
+	log.Println(url)
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -20,14 +20,11 @@ type httpChannelResult struct {
 
 func (h *HttpServiceImpl) MultiGet(urls []string, headers map[string]string) (interface{}, error) {
 	ch := make(chan httpChannelResult, len(urls))
-
+	client, err := NewHttpClient(
+		WithHeaders(headers),
+	)
 	for _, url := range urls {
 		go func(ch chan<- httpChannelResult, url string) {
-			client, err := NewHttpClient(
-				WithURL(url),
-				WithHeaders(headers),
-			)
-
 			if err != nil {
 				ch <- httpChannelResult{
 					err: err,
@@ -35,7 +32,7 @@ func (h *HttpServiceImpl) MultiGet(urls []string, headers map[string]string) (in
 				return
 			}
 
-			res, err := client.Get()
+			res, err := client.Get(url)
 
 			if err != nil {
 				ch <- httpChannelResult{
