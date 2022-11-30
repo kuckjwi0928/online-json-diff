@@ -38,7 +38,7 @@ func (a *App) registerRouter() {
 	}
 	v1 := a.router.Group("/v1")
 	{
-		v1.GET("/diff-target", baseHandler[*api.DiffTargetRequest, *api.DiffTargetResponse](new(api.DiffTargetRequest), a.handleDiffTarget))
-		v1.GET("/diff", baseHandler[*api.DiffTargetRequest, *api.DiffTargetResponse](new(api.DiffTargetRequest), a.handleDiff))
+		v1.GET("/diff-target", baseHandler[*api.DiffTargetRequest, *api.DiffTargetResponse](a.handleDiffTarget))
+		v1.GET("/diff", baseHandler[*api.DiffTargetRequest, *api.DiffTargetResponse](a.handleDiff))
 	}
 }

@@ -9,13 +9,14 @@ import (
 	"strings"
 )
 
-func baseHandler[REQ api.Request, RES any](req REQ, handlerFunc func(ctx *gin.Context, req REQ) (RES, error)) func(ctx *gin.Context) {
+func baseHandler[REQ api.Request, RES any](handlerFunc func(ctx *gin.Context, req REQ) (RES, error)) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if r := recover(); r != nil {
 				log.Println(r)
 			}
 		}()
+		var req REQ
 		err := ctx.Bind(&req)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
